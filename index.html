@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="estilos/style.css">
+    <title>Controle de Estoque Local</title>
+</head>
+<body>
+
+    <div class="container">
+        <h2>📥 Controle de Estoque (Entradas e Saídas)</h2>
+        
+        <form id="formMovimentacao">
+            <input type="text" id="nomeResponsavel" placeholder="Nome do responsável">
+            <select id="nomeItem">
+                <option value="positivo">Positivo</option>
+                <option value="chrome">Chrome</option>
+                <option value="tecnico">Técnico</option>
+                <option value="tablet">Tablet</option>
+            </select>
+            <input type="number" id="qtdItem" placeholder="Qtd" min="1" required>
+            <select id="tipoMovimentacao">
+                <option value="Entrada">Entrada (+)</option>
+                <option value="Saída">Saída (-)</option>
+            </select>
+            <button type="submit">Registrar</button>
+        </form>
+
+        <h3>Histórico de Movimentações</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Responsável</th>
+                    <th>Item</th>
+                    <th>Tipo</th>
+                    <th>Quantidade</th>
+                    <th>Data/Hora</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaCorpo">
+                </tbody>
+        </table>
+
+        <button class="btn-limpar" onclick="limparBanco()">Limpar Todo o Histórico</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
