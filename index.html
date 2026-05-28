@@ -2,8 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="estilos/style.css">
+    <link rel="shortcut icon" href="imagens/chart-simple-solid-full.svg" type="image/x-icon" style="color: rgb(132, 0, 255);">
     <title>Controle de Estoque Local</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -13,18 +16,70 @@
         <form id="formMovimentacao">
             <input type="text" id="nomeResponsavel" placeholder="Nome do responsável">
             <select id="nomeItem">
-                <option value="positivo">Positivo</option>
-                <option value="chrome">Chrome</option>
-                <option value="tecnico">Técnico</option>
-                <option value="tablet">Tablet</option>
+                <option value="Positivo">Positivo</option>
+                <option value="Chrome">Chrome</option>
+                <option value="Técnico">Técnico</option>
+                <option value="Tablet">Tablet</option>
             </select>
-            <input type="number" id="qtdItem" placeholder="Qtd" min="1" required>
+            <input type="number" id="qtdItem" placeholder="Quantidade" min="1" required>
+            <select name="" id="sala">
+                <option value="">Sala</option>
+                <option value="6A">6A</option>
+                <option value="6B">6B</option>
+                <option value="7A">7A</option>
+                <option value="7B">7B</option>
+                <option value="8A">8A</option>
+                <option value="8B">8B</option>
+                <option value="9A">9A</option>
+                <option value="9B">9B</option>
+                <option value="1A">1A</option>
+                <option value="1B">1B</option>
+                <option value="2A">2A</option>
+                <option value="2B">2B</option>
+                <option value="3A">3A</option>
+                <option value="3B">3B</option>
+                <option value="3B">3C</option>
+            </select>
             <select id="tipoMovimentacao">
                 <option value="Entrada">Entrada (+)</option>
                 <option value="Saída">Saída (-)</option>
             </select>
             <button type="submit">Registrar</button>
         </form>
+
+        <div class="dashboard">
+            <h3>📊 Dashboard de Movimentações</h3>
+
+            <div class="filtro-periodo">
+                <label>De:</label>
+                <input type="date" id="dataInicio">
+                <label>Até:</label>
+                <input type="date" id="dataFim">
+                <button onclick="aplicarFiltro()">Filtrar</button>
+                <button class="btn-reset" onclick="resetarFiltro()">Limpar Filtro</button>
+            </div>
+
+            <div class="cards-resumo">
+                <div class="card card-entrada">
+                    <span class="card-label">Total Entradas</span>
+                    <span class="card-valor" id="totalEntradas">0</span>
+                </div>
+                <div class="card card-saida">
+                    <span class="card-label">Total Saídas</span>
+                    <span class="card-valor" id="totalSaidas">0</span>
+                </div>
+                <div class="card card-estoque">
+                    <span class="card-label">Em Estoque</span>
+                    <span class="card-valor" id="emEstoque">150</span>
+                    <span class="card-sub">de 133 equipamentos</span>
+                </div>
+            </div>
+
+            <div class="grafico-box">
+                <h4>Entradas e Saídas por Dispositivo</h4>
+                <canvas id="graficoBarras"></canvas>
+            </div>
+        </div>
 
         <h3>Histórico de Movimentações</h3>
         <table>
@@ -37,12 +92,12 @@
                     <th>Data/Hora</th>
                 </tr>
             </thead>
-            <tbody id="tabelaCorpo">
-                </tbody>
+            <tbody id="tabelaCorpo"></tbody>
         </table>
 
         <button class="btn-limpar" onclick="limparBanco()">Limpar Todo o Histórico</button>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

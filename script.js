@@ -1,58 +1,212 @@
+const TOTAL_EQUIPAMENTOS = 133;
+const ITENS = ['Positivo', 'Chrome', 'Técnico', 'Tablet'];
+
 let bancoEstoque = JSON.parse(localStorage.getItem('bancoEstoque')) || [];
 
 const form = document.getElementById('formMovimentacao');
 const tabelaCorpo = document.getElementById('tabelaCorpo');
 
+let chartBarras = null;
+
+
+
+function getDadosFiltrados() {
+    const inicio = document.getElementById('dataInicio').value;
+    const fim    = document.getElementById('dataFim').value;
+
+    return bancoEstoque.filter(m => {
+        const partes = m.data.split(', ')[0].split('/');
+        const dataISO = `${partes[2]}-${partes[1]}-${partes[0]}`;
+        if (inicio && dataISO < inicio) return false;
+        if (fim    && dataISO > fim)    return false;
+        return true;
+    });
+}
+
+
+
+function aplicarFiltro() {
+    atualizarDashboard();
+    atualizarTabela();
+}
+
+
+
+function resetarFiltro() {
+    document.getElementById('dataInicio').value = '';
+    document.getElementById('dataFim').value    = '';
+    atualizarDashboard();
+    atualizarTabela();
+}
+
+
+
 function atualizarTabela() {
-    tabelaCorpo.innerHTML = "";
-
-    bancoEstoque.forEach(movimentacao => {
+    const dados = getDadosFiltrados();
+    tabelaCorpo.innerHTML = '';
+    dados.forEach(m => {
         const linha = document.createElement('tr');
-        
-        const classeTipo = movimentacao.tipo === 'Entrada' ? 'entrada' : 'saida';
-
+        const classeTipo = m.tipo === 'Entrada' ? 'entrada' : 'saida';
         linha.innerHTML = `
-            <td>${movimentacao.responsavel}</td>
-            <td>${movimentacao.item}</td>
-            <td class="${classeTipo}">${movimentacao.tipo}</td>
-            <td>${movimentacao.quantidade}</td>
-            <td>${movimentacao.data}</td>
+            <td>${m.responsavel}</td>
+            <td>${m.item}</td>
+            <td class="${classeTipo}">${m.tipo}</td>
+            <td>${m.quantidade}</td>
+            <td>${m.data}</td>
         `;
         tabelaCorpo.appendChild(linha);
     });
 }
 
+
+
+function atualizarDashboard() {
+    const dados = getDadosFiltrados();
+
+    let totalE = 0, totalS = 0;
+    dados.forEach(m => {
+        const q = parseInt(m.quantidade);
+        if (m.tipo === 'Entrada') totalE += q;
+        else totalS += q;
+    });
+
+    document.getElementById('totalEntradas').textContent = totalE;
+    document.getElementById('totalSaidas').textContent   = totalS;
+
+    const totalESaldo = bancoEstoque.reduce((acc, m) => acc + (m.tipo === 'Entrada' ? parseInt(m.quantidade) : -parseInt(m.quantidade)), 0);
+    const emEstoque = TOTAL_EQUIPAMENTOS + totalESaldo;
+    const estoqueEl = document.getElementById('emEstoque');
+    estoqueEl.textContent = emEstoque;
+    estoqueEl.style.color = emEstoque < 20 ? '#c20000' : emEstoque < 50 ? '#f5a623' : '#83f52c';
+
+    const entradasPorItem = ITENS.map(it =>
+        dados.filter(m => m.item === it && m.tipo === 'Entrada')
+             .reduce((acc, m) => acc + parseInt(m.quantidade), 0)
+    );
+    const saidasPorItem = ITENS.map(it =>
+        dados.filter(m => m.item === it && m.tipo === 'Saída')
+             .reduce((acc, m) => acc + parseInt(m.quantidade), 0)
+    );
+
+    const ctx = document.getElementById('graficoBarras').getContext('2d');
+    if (chartBarras) chartBarras.destroy();
+
+    chartBarras = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ITENS,
+            datasets: [
+                {
+                    label: 'Entradas',
+                    data: entradasPorItem,
+                    backgroundColor: 'rgba(131, 245, 44, 0.75)',
+                    borderColor: '#83f52c',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                },
+                {
+                    label: 'Saídas',
+                    data: saidasPorItem,
+                    backgroundColor: 'rgba(194, 0, 0, 0.75)',
+                    borderColor: '#c20000',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#fff', font: { size: 13 } }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} unidade(s)`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#ccc', font: { size: 13 } },
+                    grid:  { color: 'rgba(255,255,255,0.05)' }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#aaa', stepSize: 1 },
+                    grid:  { color: 'rgba(255,255,255,0.08)' },
+                    title: { display: true, text: 'Quantidade', color: '#aaa' }
+                }
+            }
+        }
+    });
+}
+
+
+
 form.addEventListener('submit', function(evento) {
     evento.preventDefault();
 
-    const responsavel = document.getElementById ('nomeResponsavel').value;
-    const item = document.getElementById('nomeItem').value;
-    const quantidade = document.getElementById('qtdItem').value;
-    const tipo = document.getElementById('tipoMovimentacao').value;
-    const dataAtual = new Date().toLocaleString('pt-BR');
+    const responsavel = document.getElementById('nomeResponsavel').value;
+    const item        = document.getElementById('nomeItem').value;
+    const quantidade  = document.getElementById('qtdItem').value;
+    const tipo        = document.getElementById('tipoMovimentacao').value;
+    
+    let dataObjeto = new Date();
+    let hora = dataObjeto.getHours();
+    let minutos = dataObjeto.getMinutes();
 
-    const novaMovimentacao = {
-        responsavel: responsavel,
-        item: item,
-        quantidade: quantidade,
-        tipo: tipo,
-        data: dataAtual
-    };
+    let minutosTotais = (hora * 60) + minutos;
 
-    bancoEstoque.push(novaMovimentacao);
+    if (minutosTotais >= 420 && minutosTotais < 470) {
+        dataObjeto.setHours(7, 0, 0);
+    }
 
+    else if (minutosTotais >= 470 && minutosTotais < 520) {
+        dataObjeto.setHours(7, 50, 0);
+    }
+
+    else if (minutosTotais >= 520 && minutosTotais < 570) {
+        dataObjeto.setHours(8, 40, 0);
+    }
+
+    else if (minutosTotais >= 570 && minutosTotais < 620) {
+        dataObjeto.setHours(9, 30, 0);
+    }
+
+    else if (minutosTotais >= 620 && minutosTotais < 640) {
+        dataObjeto.setHours(10, 20, 0);
+    }
+
+     else if (minutosTotais >= 640 && minutosTotais < 690) {
+        dataObjeto.setHours(10, 40, 0);
+    }
+    else if (minutosTotais >= 690 && minutosTotais < 740) {
+        dataObjeto.setHours(11, 30, 0);
+    }
+    
+    const dataAtual = dataObjeto.toLocaleString('pt-BR');
+
+    bancoEstoque.push({ responsavel, item, quantidade, tipo, data: dataAtual });
     localStorage.setItem('bancoEstoque', JSON.stringify(bancoEstoque));
 
     atualizarTabela();
+    atualizarDashboard();
     form.reset();
 });
 
+
+
 function limparBanco() {
-    if (confirm("Tem certeza que deseja apagar todo o histórico?")) {
+    if (confirm('Tem certeza que deseja apagar todo o histórico?')) {
         localStorage.removeItem('bancoEstoque');
         bancoEstoque = [];
         atualizarTabela();
+        atualizarDashboard();
     }
 }
 
+
+
 atualizarTabela();
+atualizarDashboard();
