@@ -112,6 +112,36 @@ th {
     font-weight: bold; 
 }
 
+.historico-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+ 
+.historico-header h3 { 
+    margin: 0; 
+}
+ 
+.btn-exportar {
+    background-color: rgb(18, 130, 60);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: .3s;
+}
+ 
+.btn-exportar:hover {
+    background-color: rgb(12, 90, 42);
+    box-shadow: 0px 5px 15px rgba(18, 130, 60, 0.4);
+}
+
 .btn-limpar { 
     color: white;
     background-color: var(--cor-vermelho); 
@@ -173,12 +203,12 @@ th {
 }
 
 .filtro-periodo .btn-reset {
-    background-color: rgb(40, 40, 40);
-    border: 1px solid #555;
+    background-color: var(--cor-vermelho);
+    border: 1px solid var(--cor-vermelho-escuro);
 }
 
 .filtro-periodo .btn-reset:hover {
-    background-color: rgb(60, 60, 60);
+    background-color: var(--cor-vermelho-escuro);
     box-shadow: none;
 }
 
@@ -211,8 +241,8 @@ th {
 }
 
 .card-estoque { 
-    background: rgba(78,95,250,0.10);  
-    border-color: rgba(78,95,250,0.4); 
+    background: rgba(132, 0, 255, 0.15);  
+    border-color: var(--cor-roxo-escuro); 
 }
 
 .card-label {

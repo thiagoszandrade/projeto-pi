@@ -77,7 +77,7 @@ function atualizarDashboard() {
     const emEstoque = TOTAL_EQUIPAMENTOS + totalESaldo;
     const estoqueEl = document.getElementById('emEstoque');
     estoqueEl.textContent = emEstoque;
-    estoqueEl.style.color = emEstoque < 20 ? '#c20000' : emEstoque < 50 ? '#f5a623' : '#83f52c';
+    estoqueEl.style.color = emEstoque < 20 ? '#c20000' : emEstoque < 50 ? '#f5a623' : 'var(--cor-roxo)';
 
     const entradasPorItem = ITENS.map(it =>
         dados.filter(m => m.item === it && m.tipo === 'Entrada')
@@ -140,6 +140,47 @@ function atualizarDashboard() {
             }
         }
     });
+}
+
+
+
+function exportarExcel() {
+    const dados = getDadosFiltrados();
+ 
+    if (dados.length === 0) {
+        alert('Nenhum dado para exportar no período selecionado.');
+        return;
+    }
+ 
+    const linhas = dados.map(m => ({
+        'Responsável': m.responsavel,
+        'Item':        m.item,
+        'Sala':        m.sala || '-',
+        'Tipo':        m.tipo,
+        'Quantidade':  parseInt(m.quantidade),
+        'Data/Hora':   m.data
+    }));
+ 
+    const ws = XLSX.utils.json_to_sheet(linhas);
+ 
+    ws['!cols'] = [
+        { wch: 18 },
+        { wch: 12 },
+        { wch: 8  },
+        { wch: 10 },
+        { wch: 12 },
+        { wch: 22 },
+    ];
+ 
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Movimentações');
+ 
+    const inicio = document.getElementById('dataInicio').value;
+    const fim    = document.getElementById('dataFim').value;
+    const sufixo = inicio && fim ? `_${inicio}_a_${fim}` : '';
+    const nomeArquivo = `estoque${sufixo}.xlsx`;
+ 
+    XLSX.writeFile(wb, nomeArquivo);
 }
 
 

@@ -7,6 +7,7 @@
     <link rel="shortcut icon" href="imagens/chart-simple-solid-full.svg" type="image/x-icon" style="color: rgb(132, 0, 255);">
     <title>Controle de Estoque Local</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -14,7 +15,23 @@
         <h2>📥 Controle de Estoque (Entradas e Saídas)</h2>
         
         <form id="formMovimentacao">
-            <input type="text" id="nomeResponsavel" placeholder="Nome do responsável">
+            <select name="" id="nomeResponsavel">
+                <option value="">Selecione o professor</option>
+                <option value="Ilma">Ilma</option>
+                <option value="Karen">Karen</option>
+                <option value="Isabela">Isabela</option>
+                <option value="Josiane">Josiane</option>
+                <option value="Fernando">Fernando</option>
+                <option value="Ione">Ione</option>
+                <option value="Fernanda">Fernanda</option>
+                <option value="Valdirene">Valdirene</option>
+                <option value="Simone">Simone</option>
+                <option value="Elaine">Elaine</option>
+                <option value="Juliano">Juliano</option>
+                <option value="Camila">Camila</option>
+                <option value="Dilerman">Dilerman</option>
+            </select>
+
             <select id="nomeItem">
                 <option value="Positivo">Positivo</option>
                 <option value="Chrome">Chrome</option>
@@ -81,7 +98,11 @@
             </div>
         </div>
 
-        <h3>Histórico de Movimentações</h3>
+         <div class="historico-header">
+            <h3>Histórico de Movimentações</h3>
+            <button class="btn-exportar" onclick="exportarExcel()">⬇️ Exportar Excel</button>
+        </div>
+
         <table>
             <thead>
                 <tr>
