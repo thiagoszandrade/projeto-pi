@@ -52,6 +52,7 @@ function atualizarTabela() {
             <td>${m.item}</td>
             <td class="${classeTipo}">${m.tipo}</td>
             <td>${m.quantidade}</td>
+            <td>${m.sala}</td>
             <td>${m.data}</td>
         `;
         tabelaCorpo.appendChild(linha);
@@ -155,9 +156,9 @@ function exportarExcel() {
     const linhas = dados.map(m => ({
         'Responsável': m.responsavel,
         'Item':        m.item,
-        'Sala':        m.sala || '-',
         'Tipo':        m.tipo,
         'Quantidade':  parseInt(m.quantidade),
+        'Sala':        m.sala,
         'Data/Hora':   m.data
     }));
  
@@ -191,6 +192,7 @@ form.addEventListener('submit', function(evento) {
     const responsavel = document.getElementById('nomeResponsavel').value;
     const item        = document.getElementById('nomeItem').value;
     const quantidade  = document.getElementById('qtdItem').value;
+    const sala        = document.getElementById('selectSala').value;
     const tipo        = document.getElementById('tipoMovimentacao').value;
     
     let dataObjeto = new Date();
@@ -228,7 +230,7 @@ form.addEventListener('submit', function(evento) {
     
     const dataAtual = dataObjeto.toLocaleString('pt-BR');
 
-    bancoEstoque.push({ responsavel, item, quantidade, tipo, data: dataAtual });
+    bancoEstoque.push({ responsavel, item, quantidade, sala, tipo, data: dataAtual });
     localStorage.setItem('bancoEstoque', JSON.stringify(bancoEstoque));
 
     atualizarTabela();
