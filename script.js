@@ -1,4 +1,4 @@
-const TOTAL_EQUIPAMENTOS = 133;
+const TOTAL_EQUIPAMENTOS = 140;
 const ITENS = ['Positivo', 'Chrome', 'Técnico', 'Tablet'];
 
 let bancoEstoque = JSON.parse(localStorage.getItem('bancoEstoque')) || [];
@@ -77,7 +77,7 @@ function atualizarDashboard() {
     const emEstoque = TOTAL_EQUIPAMENTOS + totalESaldo;
     const estoqueEl = document.getElementById('emEstoque');
     estoqueEl.textContent = emEstoque;
-    estoqueEl.style.color = emEstoque < 20 ? '#c20000' : emEstoque < 50 ? '#f5a623' : 'var(--cor-roxo)';
+    estoqueEl.style.color = emEstoque < 30 ? '#c20000' : emEstoque < 60 ? '#f5a623' : 'var(--cor-roxo)';
 
     const entradasPorItem = ITENS.map(it =>
         dados.filter(m => m.item === it && m.tipo === 'Entrada')
